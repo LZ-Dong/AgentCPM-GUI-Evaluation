@@ -124,6 +124,24 @@ python run_eval_agent.py --input_path ./eval_results/Qwen2.5-VL-7B-Instruct/andr
 
 ---
 
+## UI-TARS-1.5-7B
+
+### Inference
+
+```bash
+# chinese_app_test
+python run_predict_ui_tars1_5.py --model_path ../model/UI-TARS-1.5-7B --output_dir ./eval_results/UI-TARS-1.5-7B/chinese_app_test --data_name chinese_app_test
+```
+
+### Eval
+
+```bash
+# chinese_app_test
+python run_eval_agent.py --input_path ./eval_results/UI-TARS-1.5-7B/chinese_app_test/all.jsonl --output_dir ./eval_results/UI-TARS-1.5-7B/chinese_app_test/results --data_name chinese_app_test
+```
+
+---
+
 ## UI-TARS-7B-SFT
 
 ### Inference

@@ -174,3 +174,16 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+.vscode
+# dataset
+eval/eval_data/chinese_app_test
+
+# model
+model/AgentCPM-GUI
+model/UI-TARS-7B-SFT
+model/OS-Atlas-Pro-7B
+model/UI-TARS-1.5-7B
+
+# result
+eval/eval_results
