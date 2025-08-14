@@ -193,6 +193,7 @@ def run_episode_low(episode, image_path,history_list,use_low_instruction):
 
         
         episode["pred"] = uitars2minicpm(output_text[0])
+        episode["output_text"] = output_text[0]
         print(episode["pred"])
     except Exception as e:
         print(f"Error: {e}")
@@ -250,7 +251,7 @@ def run_episode_high(episode, image_path,history_list,use_low_instruction):
         })
 
         text_prompt = _tokenizer.apply_chat_template(conversation, tokenize=False,add_generation_prompt=True)
-        print(text_prompt)
+        # print(text_prompt)
         # Excepted output: '<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe this image.<|im_end|>\n<|im_start|>assistant\n'
         image_inputs, video_inputs = process_vision_info(conversation)
         inputs = _tokenizer(
@@ -272,11 +273,12 @@ def run_episode_high(episode, image_path,history_list,use_low_instruction):
         output_text = _tokenizer.batch_decode(
             generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True
         )
-        print(output_text[0])
+        # print(output_text[0])
 
         
         episode["pred"] = uitars2minicpm(output_text[0])
-        print(episode["pred"])
+        episode["output_text"] = output_text[0]
+        # print(episode["pred"])
     except Exception as e:
         print(f"Error: {e}")
         episode["pred"] = NO_THOUGHT_EXAMPLE

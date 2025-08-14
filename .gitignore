@@ -178,6 +178,8 @@ cython_debug/
 .vscode
 # dataset
 eval/eval_data/chinese_app_test
+eval/eval_data/aitz_test
+eval/eval_data/tmp
 
 # model
 model/AgentCPM-GUI
