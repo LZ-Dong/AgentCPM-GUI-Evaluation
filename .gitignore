@@ -180,12 +180,17 @@ cython_debug/
 eval/eval_data/chinese_app_test
 eval/eval_data/aitz_test
 eval/eval_data/tmp
+eval/eval_data/android_control_test
+eval/eval_data/android_control_high_test
 
 # model
 model/AgentCPM-GUI
 model/UI-TARS-7B-SFT
 model/OS-Atlas-Pro-7B
 model/UI-TARS-1.5-7B
+model/GUI-Owl-7B
 
 # result
 eval/eval_results
+
+flash_attn-2.7.4.post1+cu12torch2.5cxx11abiFALSE-cp311-cp311-linux_x86_64.whl

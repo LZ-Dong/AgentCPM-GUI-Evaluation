@@ -240,7 +240,7 @@ def get_qwen_response(user_query: str, screenshot: str, history_actions: list, a
             messages=[
                 Message(role="system", content=[ContentItem(text="You are a helpful assistant.")]),
                 Message(role="user", content=[
-                    ContentItem(text=user_query_template.format(user_request=user_query,history_actions=history_actions_str)),
+                    ContentItem(text=user_query_template_thought.format(user_request=user_query,history_actions=history_actions_str)),
                     ContentItem(image=f"file://{screenshot}")
                 ]),
             ],
@@ -300,10 +300,12 @@ def get_qwen_response(user_query: str, screenshot: str, history_actions: list, a
         print('error:', str(e))
         print('traceback:', traceback.format_exc())
         return str(e), 500
+
 def qwen2_5_2_minicpm(output_text: str, resized_height: int, resized_width: int) -> dict:
     """
     Convert Qwen2.5's output to minicpm's output
     """
+    thought = output_text.split('<thinking>')[1].split('</thinking>')[0].strip() if '<thinking>' in output_text and '</thinking>' in output_text else ""
     action = json.loads(output_text.split('<tool_call>\n')[1].split('\n</tool_call>')[0])
     qwen_action = action['arguments']
     action_name = qwen_action['action']
@@ -314,7 +316,7 @@ def qwen2_5_2_minicpm(output_text: str, resized_height: int, resized_width: int)
         # normalize
         x = x/ resized_width*1000
         y = y/ resized_height*1000
-        return {"POINT": [int(x), int(y)]}
+        return {"thought": thought, "POINT": [int(x), int(y)]}
     elif action_name == "long_press":
         x, y = qwen_action["coordinate"]
         x = x/ resized_width*1000
@@ -322,7 +324,7 @@ def qwen2_5_2_minicpm(output_text: str, resized_height: int, resized_width: int)
         time=qwen_action["time"]
         # convert time to milliseconds
         time = time*1000
-        return {"POINT": [int(x), int(y)], "duration": time}
+        return {"thought": thought, "POINT": [int(x), int(y)], "duration": time}
     
     # handle swipe action
     elif action_name == "swipe":
@@ -337,30 +339,30 @@ def qwen2_5_2_minicpm(output_text: str, resized_height: int, resized_width: int)
             direction = "right" if x2 > x1 else "left"
         else:  # vertical swipe
             direction = "down" if y2 > y1 else "up"
-        return {"POINT": [int(x1), int(y1)], "to": direction}
+        return {"thought": thought, "POINT": [int(x1), int(y1)], "to": direction}
     
     # handle input text
     elif action_name == "type":
-        return {"TYPE": qwen_action["text"]}
+        return {"thought": thought, "TYPE": qwen_action["text"]}
     
     # handle system button
     elif action_name == "system_button":
         button = qwen_action["button"]
         if button == "Back":
-            return {"PRESS": "BACK"}
+            return {"thought": thought, "PRESS": "BACK"}
         elif button == "Home":
-            return {"PRESS": "HOME"}
+            return {"thought": thought, "PRESS": "HOME"}
         elif button == "Enter":
-            return {"PRESS": "ENTER"}
-    
+            return {"thought": thought, "PRESS": "ENTER"}
+
     # handle terminate action
     elif action_name == "terminate":
-        return {"STATUS": "finish"}
+        return {"thought": thought, "STATUS": "finish"}
     elif action_name == "wait":
         # convert time to milliseconds
         time = qwen_action["time"]
         time = time*1000    
-        return {"duration": time}
+        return {"thought": thought, "duration": time}
     
     # for other actions (such as key,open, etc.), they may need to be ignored or specially processed
     #key wait cannot find corresponding action

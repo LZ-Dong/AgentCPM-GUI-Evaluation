@@ -49,7 +49,7 @@ DEVICES = [
     #"cuda:0", 
     #"cuda:1", 
     #"cuda:2", "cuda:3",
-       "cuda:4", 
+       "cuda:2", "cuda:2",
     #    "cuda:5", "cuda:6", "cuda:7",
     ]
 torch.set_num_threads(4)
@@ -204,6 +204,7 @@ def run_episode_low(episode, image_path, history_list, use_low_instruction, lang
         print('traceback:', traceback.format_exc())
         episode["pred"] = NO_THOUGHT_EXAMPLE
     return episode
+
 def run_episode_high(episode, image_path, history_list, use_low_instruction, language):
     #print(msg)
     #print(episode)
@@ -285,8 +286,15 @@ def uitars2minicpm(action_str, img_w, img_h):
     Returns:
         dict: new format action dictionary
     """
-    result = {"STATUS": "continue"}
-    
+    # result = {"STATUS": "continue"}
+    result = {}
+    # Extract thought text using regex
+    thought_match = re.search(r'Thought:\s*(.*?)(?=\nAction:|$)', action_str, re.DOTALL)
+    if thought_match:
+        thought_text = thought_match.group(1).strip()
+        result["thought"] = thought_text
+    else:
+        result["thought"] = ""
     # auxiliary function to extract coordinates
     def extract_coords(s):
         # directly find and extract the coordinates in the parentheses
