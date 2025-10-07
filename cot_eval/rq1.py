@@ -6,6 +6,7 @@
 4. 计算gta_sys的混淆矩阵
 """
 
+import argparse
 import json
 import pandas as pd
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, precision_score, recall_score, f1_score, cohen_kappa_score, matthews_corrcoef
@@ -110,13 +111,19 @@ def calculate_binary_classification_metrics(df):
     }
 
 def main():
-    file_path = "/data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/AgentCPM-GUI/aitz_test/annotations.jsonl"
+    parser = argparse.ArgumentParser(description="计算二分类评估指标")
+    parser.add_argument('--file_path', type=str, required=True, help='输入的JSONL文件路径')
+    args = parser.parse_args()
     
     # 加载数据
-    df = load_and_process_data(file_path)
+    df = load_and_process_data(args.file_path)
     
     # 计算二分类评估指标
     metrics = calculate_binary_classification_metrics(df)
 
 if __name__ == "__main__":
     main()
+
+"""
+python rq1.py --file_path /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/AgentCPM-GUI/aitz_test/gta_strict_clean.jsonl
+"""

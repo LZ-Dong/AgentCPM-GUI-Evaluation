@@ -1,4 +1,4 @@
-# GUI Annotation Tool for GTA/CAA Evaluation (cleaned)
+# GUI Annotation Tool for GTA/CAA Evaluation
 # Only non-trivial sections are commented.
 
 import os, json, argparse, html
@@ -36,7 +36,7 @@ def draw_points(img_path: str, pts: Dict[str, Optional[Tuple[int, int]]]) -> Ima
         p = pts.get(name)
         if isinstance(p, (tuple, list)) and len(p) == 2 and all(isinstance(v, int) for v in p):
             y, x = p
-            r = max(6, int(min(im.size) * 0.01))
+            r = max(20, int(min(im.size) * 0.01))
             draw.ellipse([(x - r, y - r), (x + r, y + r)], fill=color, outline=(0, 0, 0, 120))
     return im
 
@@ -110,13 +110,13 @@ def _defaults_for_current(state):
     ex = state["data"][state["idx"]]
     a = state["ann"].get(ex["_id"])  # Use saved values if present to avoid clobbering.
     if a:
-        return a.get("gta", "NA"), a.get("caa", "NA"), a.get("error_code", "")
-    return "NA", "NA", ""
+        return a.get("gta", "NA"), a.get("error_code", "")
+    return "NA", ""
 
 
-def save_annotation(state, gta, caa, err):
+def save_annotation(state, gta, err):
     ex = state["data"][state["idx"]]
-    ann = {"id": ex["_id"], "gta": gta, "caa": caa, "error_code": err}
+    ann = {"id": ex["_id"], "gta": gta, "error_code": err}
     state["ann"][ex["_id"]] = ann
 
     # Atomic-ish: rewrite the small JSONL on every save keeps things simple and consistent.
@@ -134,14 +134,14 @@ def goto(state, delta):
     msg = f"Now: {state['idx']+1}/{n}"
     if state["idx"] == prev and delta > 0:
         msg += " | Already at last item"
-    g_def, c_def, e_def = _defaults_for_current(state)
-    return view, msg, g_def, c_def, e_def
+    g_def, e_def = _defaults_for_current(state)
+    return view, msg, g_def, e_def
 
 
-def save_and_next(state, gta, caa, err):
-    save_msg = save_annotation(state, gta, caa, err)
-    (image, info_md), nav_msg, g_def, c_def, e_def = goto(state, +1)
-    return (f"{save_msg} | {nav_msg}", image, info_md, g_def, c_def, e_def)
+def save_and_next(state, gta, err):
+    save_msg = save_annotation(state, gta, err)
+    (image, info_md), nav_msg, g_def, e_def = goto(state, +1)
+    return (f"{save_msg} | {nav_msg}", image, info_md, g_def, e_def)
 
 
 def jump_to(state, target_one_based):
@@ -155,8 +155,8 @@ def jump_to(state, target_one_based):
     state["idx"] = t - 1
 
     image, info_md = get_example_view(state)
-    g_def, c_def, e_def = _defaults_for_current(state)
-    return (f"Jumped: {t}/{n}", image, info_md, g_def, c_def, e_def)
+    g_def, e_def = _defaults_for_current(state)
+    return (f"Jumped: {t}/{n}", image, info_md, g_def, e_def)
 
 
 # ========== Gradio Application Interface ==========
@@ -180,34 +180,13 @@ def build_app(default_input: str):
         state = gr.State()
         with gr.Row():
             with gr.Column(scale=7, min_width=520):
-                gr.Markdown("### Screenshot (Green=GT, Blue=Pred)")
+                gr.Markdown("### Screenshot (Green=GT)")
                 img = gr.Image(label=None, interactive=False, height=600)
             with gr.Column(scale=6, min_width=460):
                 info = gr.Markdown("", label=None)
                 gr.Markdown("**Annotation Form**")
-                with gr.Accordion("Error code quick ref", open=False):
-                    gr.Markdown(
-                        """
-                        - `E_GT_ERROR`: Ground truth 标注错误（类型/参数/坐标等）。
-
-                        - `E_COT_MISSING`: 样本中缺失 CoT（`pred.thought` 为空）。
-
-                        - `E_COT_PARSE_FAIL`: 有 CoT 但无法从中解析出低层动作。
-
-                        - `E_PRED_MISSING`: 模型预测缺失或不可解析。
-
-                        - `E_IMAGE_NOT_FOUND`: 截图缺失或路径无法解析。
-
-                        - `E_DATA_BAD`: JSON 字段缺失/格式异常导致无法评估。
-
-                        - `E_MISMATCH_INSTR_SCREEN`: 指令与屏幕不匹配。
-
-                        - `E_OTHER`: 以上都不适用的其它情况。
-                        """
-                    )
                 with gr.Row():
                     gta = gr.Radio(choices=["1", "0", "NA"], value="NA", label="GTA", scale=1)
-                    caa = gr.Radio(choices=["1", "0", "NA"], value="NA", label="CAA", scale=1)
                 err = gr.Dropdown(
                     choices=[
                     "",
@@ -229,12 +208,12 @@ def build_app(default_input: str):
         def _initial():
             st = init_state(default_input)
             image, info_md = get_example_view(st)
-            g_def, c_def, e_def = _defaults_for_current(st)
-            return (st, image, info_md, f"Loaded {len(st['data'])} steps. Now 1/{len(st['data'])}", g_def, c_def, e_def)
+            g_def, e_def = _defaults_for_current(st)
+            return (st, image, info_md, f"Loaded {len(st['data'])} steps. Now 1/{len(st['data'])}", g_def, e_def)
 
-        demo.load(_initial, inputs=None, outputs=[state, img, info, status, gta, caa, err])
-        btn_save_next.click(save_and_next, [state, gta, caa, err], [status, img, info, gta, caa, err])
-        btn_jump.click(jump_to, [state, jump_idx], [status, img, info, gta, caa, err])
+        demo.load(_initial, inputs=None, outputs=[state, img, info, status, gta, err])
+        btn_save_next.click(save_and_next, [state, gta, err], [status, img, info, gta, err])
+        btn_jump.click(jump_to, [state, jump_idx], [status, img, info, gta, err])
 
     return demo
 
@@ -242,11 +221,30 @@ def build_app(default_input: str):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True, help="Input JSONL file (e.g. sampled_200.jsonl)")
+    ap.add_argument("--port", type=int, default=7861, help="Port number for the web interface (default: 7860)")
+    ap.add_argument("--share", action="store_true", help="Create a public link")
     args = ap.parse_args()
     app = build_app(args.input)
-    app.launch()
+    app.launch(server_port=args.port, share=args.share)
 
 
 if __name__ == "__main__":
     main()
-# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/AgentCPM-GUI/aitz_test/sampled_200.jsonl
+    
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/AgentCPM-GUI/aitz_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/UI-TARS-1.5-7B/aitz_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/GUI-Owl-7B/aitz_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/AgentCPM-GUI/chinese_app_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/UI-TARS-1.5-7B/chinese_app_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/GUI-Owl-7B/chinese_app_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/AgentCPM-GUI/android_control_high_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/UI-TARS-1.5-7B/android_control_high_test/sampled.jsonl
+
+# python annot_ui_min.py --input /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/GUI-Owl-7B/android_control_high_test/sampled.jsonl

@@ -1,0 +1,32 @@
+[
+  {
+    "action_type": "CLICK",
+    "count": 5504,
+    "ratio": "54.17%"
+  },
+  {
+    "action_type": "STOP",
+    "count": 1680,
+    "ratio": "16.53%"
+  },
+  {
+    "action_type": "SCROLL",
+    "count": 1297,
+    "ratio": "12.76%"
+  },
+  {
+    "action_type": "INPUT",
+    "count": 685,
+    "ratio": "6.74%"
+  },
+  {
+    "action_type": "NO_ACTION",
+    "count": 623,
+    "ratio": "6.13%"
+  },
+  {
+    "action_type": "PRESS BACK",
+    "count": 372,
+    "ratio": "3.66%"
+  }
+]

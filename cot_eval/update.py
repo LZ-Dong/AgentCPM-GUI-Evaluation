@@ -134,3 +134,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+python update.py \
+--result_json /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/eval/eval_results/AgentCPM-GUI/aitz_test/results/result.json \
+--cot_json /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/eval/eval_results/AgentCPM-GUI_cot/aitz_test/results/result.json \
+--annotations_jsonl /data1/home/donglingzhong/codespace/AgentCPM-GUI-Evaluation/cot_eval/data/AgentCPM-GUI/aitz_test/gta_strict_clean.jsonl
+"""

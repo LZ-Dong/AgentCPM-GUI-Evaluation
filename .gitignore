@@ -182,6 +182,7 @@ eval/eval_data/aitz_test
 eval/eval_data/tmp
 eval/eval_data/android_control_test
 eval/eval_data/android_control_high_test
+eval/eval_data/android_control_train
 
 # model
 model/AgentCPM-GUI
@@ -189,6 +190,10 @@ model/UI-TARS-7B-SFT
 model/OS-Atlas-Pro-7B
 model/UI-TARS-1.5-7B
 model/GUI-Owl-7B
+model/GUI-Owl-32B
+model/UI-TARS-7B-DPO
+model/UI-TARS-72B-DPO
+model/UI-TARS-72B-SFT
 
 # result
 eval/eval_results

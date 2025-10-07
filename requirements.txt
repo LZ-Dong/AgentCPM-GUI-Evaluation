@@ -30,7 +30,7 @@ qwen_agent==0.0.16
 qwen_vl_utils==0.0.11
 Requests==2.32.3
 setuptools==75.1.0
-tensorflow==2.19.0
+# tensorflow==2.19.0
 tiktoken==0.7.0
 torchvision==0.20.1
 tqdm==4.66.3

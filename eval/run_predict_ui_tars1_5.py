@@ -49,7 +49,8 @@ DEVICES = [
     #"cuda:0", 
     #"cuda:1", 
     #"cuda:2", "cuda:3",
-       "cuda:2", "cuda:2",
+       "cuda:2", "cuda:2", "cuda:2",
+       "cuda:7", "cuda:7", "cuda:7",
     #    "cuda:5", "cuda:6", "cuda:7",
     ]
 torch.set_num_threads(4)
@@ -288,11 +289,18 @@ def uitars2minicpm(action_str, img_w, img_h):
     """
     # result = {"STATUS": "continue"}
     result = {}
-    # Extract thought text using regex
-    thought_match = re.search(r'Thought:\s*(.*?)(?=\nAction:|$)', action_str, re.DOTALL)
+    
+    # Normalize newlines to handle \r\n and \r uniformly
+    text = re.sub(r'\r\n?|\r', '\n', action_str)
+
+    # Extract Thought robustly (stop at the beginning of the Action line)
+    thought_match = re.search(
+        r'(?is)^Thought\s*:\s*(.*?)(?=^\s*Action\s*:\s*|$)',
+        text,
+        flags=re.MULTILINE
+    )
     if thought_match:
-        thought_text = thought_match.group(1).strip()
-        result["thought"] = thought_text
+        result["thought"] = thought_match.group(1).strip()
     else:
         result["thought"] = ""
     # auxiliary function to extract coordinates
@@ -341,6 +349,9 @@ def uitars2minicpm(action_str, img_w, img_h):
     elif "press_home()" in action_str:
         result["PRESS"] = "HOME"
         
+    elif "press_enter()" in action_str:
+        result["PRESS"] = "ENTER"
+
     elif "wait()" in action_str:
         result["duration"] = 200
         

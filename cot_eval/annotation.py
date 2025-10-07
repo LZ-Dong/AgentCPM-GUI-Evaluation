@@ -76,22 +76,22 @@ def extract_gt_action(example):
             action_type = 'SCROLL'
             v_change = abs(touch_yx[0] - lift_yx[0])
             h_change = abs(lift_yx[1] - touch_yx[1])
-            is_scroll_up = lift_yx[0] < touch_yx[0]     # touch is lower
-            is_scroll_left = lift_yx[1] < touch_yx[1]   # touch is bigger
+            # 手指向上滑动 -> 内容向下滚动；手指向下滑动 -> 内容向上滚动
+            is_scroll_down = lift_yx[0] < touch_yx[0]     # lift位置更靠上，手指向上滑
+            # 手指向左滑动 -> 内容向右滚动；手指向右滑动 -> 内容向左滚动  
+            is_scroll_right = lift_yx[1] < touch_yx[1]   # lift位置更靠左，手指向左滑
             if v_change >= 0.9*h_change:   # vertical
-                action = "scroll up" if is_scroll_up else "scroll down"
-            else:                          # horizonal
-                action = "scroll left" if is_scroll_left else "scroll right"
+                action = "scroll down" if is_scroll_down else "scroll up"
+            else:                          # horizontal
+                action = "scroll right" if is_scroll_right else "scroll left"
     elif ex_action_type in (
         ActionType.PRESS_BACK, 
         ActionType.PRESS_HOME,
+        ActionType.PRESS_ENTER
     ):  
         button = ActionType(ex_action_type).name.split('_')[1].lower()
         action = f'press {button}'
-        action_type = f'PRESS {button}'.upper()
-    elif ex_action_type == ActionType.PRESS_ENTER:
-        action = "press enter"
-        action_type = 'PRESS ENTER'
+        action_type = 'PRESS'
     elif ex_action_type == ActionType.TYPE:
         action_text = example['result_action_text']
         action = f'input text "{action_text}"'
@@ -159,7 +159,7 @@ def extract_pred_action(example):
         action_type = 'LONG_POINT'
     elif "PRESS" in _action:
         action = f'press {_action["PRESS"].lower()}'
-        action_type = f'PRESS {_action["PRESS"]}'
+        action_type = 'PRESS'
     elif "duration" in _args: # pause and wait
         action = f'no action for {_args["duration"]} ms'
         action_type = 'NO_ACTION'

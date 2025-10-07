@@ -1,0 +1,37 @@
+[
+  {
+    "action_type": "CLICK",
+    "count": 2736,
+    "ratio": "57.92%"
+  },
+  {
+    "action_type": "SCROLL",
+    "count": 601,
+    "ratio": "12.72%"
+  },
+  {
+    "action_type": "STOP",
+    "count": 504,
+    "ratio": "10.67%"
+  },
+  {
+    "action_type": "INPUT",
+    "count": 500,
+    "ratio": "10.58%"
+  },
+  {
+    "action_type": "PRESS HOME",
+    "count": 232,
+    "ratio": "4.91%"
+  },
+  {
+    "action_type": "PRESS ENTER",
+    "count": 118,
+    "ratio": "2.50%"
+  },
+  {
+    "action_type": "PRESS BACK",
+    "count": 33,
+    "ratio": "0.70%"
+  }
+]

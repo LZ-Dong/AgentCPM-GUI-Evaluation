@@ -24,11 +24,11 @@ def draw_quadrant(
     single_axes: bool = True,
     top_title: str = "GTA=1",
     bottom_title: str = "GTA=0",
-    right_title: str = "EM=1",
-    left_title: str = "EM=0",
+    right_title: str = "EM=0",
+    left_title: str = "EM=1",
     title_fontsize: int = 10,
     show_legend: bool = True,
-    legend_loc: str = "upper left",
+    legend_loc: str = "upper right",
     legend_fontsize: int = 10,
     figsize: Tuple[float, float] = (6, 5),
     dpi: int = 160,
@@ -54,32 +54,32 @@ def draw_quadrant(
         ax.axhline(0, color="black", lw=1)
         ax.axvline(0, color="black", lw=1)
 
-    # Q1
-    w, h = size["Q1"]
-    ax.add_patch(Rectangle((0, 0), w, h, facecolor=colors["Q1"], alpha=0.85,
-                           edgecolor="none"))
-    ax.text(0.5 * w, 0.5 * h, f"{int(counts['Q1'])}",
-            ha="center", va="center", fontsize=10, color="white")
-
-    # Q2
+    # Q2 (右上角，原Q1位置)
     w, h = size["Q2"]
-    ax.add_patch(Rectangle((-w, 0), w, h, facecolor=colors["Q2"], alpha=0.85,
+    ax.add_patch(Rectangle((0, 0), w, h, facecolor=colors["Q2"], alpha=0.85,
                            edgecolor="none"))
-    ax.text(-0.5 * w, 0.5 * h, f"{int(counts['Q2'])}",
+    ax.text(0.5 * w, 0.5 * h, f"{counts['Q2']:.2f}",
             ha="center", va="center", fontsize=10, color="black")
 
-    # Q3
-    w, h = size["Q3"]
-    ax.add_patch(Rectangle((-w, -h), w, h, facecolor=colors["Q3"], alpha=0.85,
+    # Q1 (左上角，原Q2位置)
+    w, h = size["Q1"]
+    ax.add_patch(Rectangle((-w, 0), w, h, facecolor=colors["Q1"], alpha=0.85,
                            edgecolor="none"))
-    ax.text(-0.5 * w, -0.5 * h, f"{int(counts['Q3'])}",
+    ax.text(-0.5 * w, 0.5 * h, f"{counts['Q1']:.2f}",
             ha="center", va="center", fontsize=10, color="black")
 
-    # Q4
+    # Q4 (左下角，原Q3位置)
     w, h = size["Q4"]
-    ax.add_patch(Rectangle((0, -h), w, h, facecolor=colors["Q4"], alpha=0.85,
+    ax.add_patch(Rectangle((-w, -h), w, h, facecolor=colors["Q4"], alpha=0.85,
                            edgecolor="none"))
-    ax.text(0.5 * w, -0.5 * h, f"{int(counts['Q4'])}",
+    ax.text(-0.5 * w, -0.5 * h, f"{counts['Q4']:.2f}",
+            ha="center", va="center", fontsize=10, color="black")
+
+    # Q3 (右下角，原Q4位置)
+    w, h = size["Q3"]
+    ax.add_patch(Rectangle((0, -h), w, h, facecolor=colors["Q3"], alpha=0.85,
+                           edgecolor="none"))
+    ax.text(0.5 * w, -0.5 * h, f"{counts['Q3']:.2f}",
             ha="center", va="center", fontsize=10, color="black")
 
     # 上下标签：上标签高于y轴顶部，下标签低于y轴底部
@@ -115,7 +115,7 @@ def draw_quadrant(
 
 # 示例
 if __name__ == "__main__":
-    counts = {"Q1": 129, "Q2": 13, "Q3": 25, "Q4": 24}
+    counts = {"Q1": 65.76, "Q2": 8.69, "Q3": 22.14, "Q4": 3.41}
     colors = {"Q1": "#4A90E2", "Q2": "#6FA8DC", "Q3": "#AED6F1", "Q4": "#A9CCE3"}
     labels = {
         "Q1": "Correct CoT & Action",
